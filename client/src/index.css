@@ -1,0 +1,7 @@
+/* === Global Styles === */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #e8f5e9, #ffffff);
+  min-height: 100vh;
+}
