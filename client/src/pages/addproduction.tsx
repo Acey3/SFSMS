@@ -1,13 +1,19 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; // Added React import for the Event type
 import { useLocation } from "wouter";
 import api from "../services/api";
 import "../style.css";
 
+// 1. Define the Recipe interface
+interface Recipe {
+  id: string | number;
+  name: string;
+}
+
 const AddProduction = () => {
   const [_, setLocation] = useLocation();
   
-  // Form State
-  const [recipes, setRecipes] = useState([]);
+  // 2. Properly type the recipes state
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [recipeId, setRecipeId] = useState("");
   const [quantity, setQuantity] = useState("");
   
@@ -16,7 +22,7 @@ const AddProduction = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // 1. Fetch Recipes on load so the user can select one
+  // Fetch Recipes on load
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
@@ -31,8 +37,8 @@ const AddProduction = () => {
     fetchRecipes();
   }, []);
 
-  // 2. Handle Form Submission
-  const handleSubmit = async (e) => {
+  // 3. Handle Form Submission with typed event
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -53,10 +59,8 @@ const AddProduction = () => {
       await api.post("/production", {
         recipe_id: recipeId,
         quantity_produced: Number(quantity),
-        // usually the backend handles the 'date' automatically
       });
 
-      // Success! Go back to the list
       alert("Production recorded successfully!");
       setLocation("/production");
 
@@ -70,7 +74,6 @@ const AddProduction = () => {
 
   return (
     <div className="form-container-page">
-      {/* Simple Navbar reuse or Back Button */}
       <button className="back-btn" onClick={() => setLocation("/production")}>
         ← Back to List
       </button>
@@ -81,7 +84,6 @@ const AddProduction = () => {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          {/* Recipe Selector */}
           <div className="form-group">
             <label>Select Recipe</label>
             {loadingRecipes ? (
@@ -89,7 +91,7 @@ const AddProduction = () => {
             ) : (
               <select 
                 value={recipeId} 
-                onChange={(e) => setRecipeId(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setRecipeId(e.target.value)}
                 className="form-input"
               >
                 <option value="">-- Choose a Recipe --</option>
@@ -102,13 +104,12 @@ const AddProduction = () => {
             )}
           </div>
 
-          {/* Quantity Input */}
           <div className="form-group">
             <label>Quantity (kg/bags)</label>
             <input
               type="number"
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuantity(e.target.value)}
               placeholder="e.g., 500"
               className="form-input"
               min="1"
